@@ -80,7 +80,7 @@ export default class Todos extends React.PureComponent {
     this.setState(() => ({ title: text }));
   }
 
-  nextTodo = (id) => {
+  updateTodo = (id, prev = 0) => {
     let targetIndex;
     const oldState = this.state.todos.slice();
     const target = oldState.filter((obj, i) => {
@@ -89,7 +89,7 @@ export default class Todos extends React.PureComponent {
         return obj;
       }
     })[0];
-    const newStatus = this.handleNextStatus(target.status);
+    const newStatus = prev !== 1 ? this.handleNextStatus(target.status) : this.handlePrevStatus(target.status);
     target[STATUS] = newStatus;
     const head = oldState.slice(0, targetIndex);
     const tail = oldState.slice(targetIndex + 1);
@@ -97,6 +97,22 @@ export default class Todos extends React.PureComponent {
     this.setState(() => ({
       todos: newState,
     }));
+  }
+
+  handlePrevStatus = (status) => {
+    let newStatus;
+    switch(status) {
+      case INCOMPLETE:
+        nextStatus = status;
+        break;
+      case IN_PROGRESS:
+        nextStatus = INCOMPLETE;
+        break;
+      case COMPLETE:
+        nextStatus = IN_PROGRESS;
+    }
+
+    return nextStatus;
   }
 
   handleNextStatus = (status) => {
@@ -135,17 +151,17 @@ export default class Todos extends React.PureComponent {
           <TodoDisplayer
             title="Backlog"
             todos={todos.filter(t => t.status === 'incomplete')}
-            nextTodo={this.nextTodo}
+            nextTodo={this.updateTodo}
           />
           <TodoDisplayer
             title="In Progress"
             todos={todos.filter(t => t.status === 'in progress')}
-            nextTodo={this.nextTodo}
+            nextTodo={this.updateTodo}
           />
           <TodoDisplayer
             title="Complete"
             todos={todos.filter(t => t.status === 'complete')}
-            nextTodo={this.nextTodo}
+            nextTodo={this.updateTodo}
           />
         </View>
         <Button onPress={this.clearAllCompleted} style={styles.clearCompleted}>

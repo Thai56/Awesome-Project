@@ -5,19 +5,28 @@ import {
   StyleSheet,
   TouchableHighlight,
 } from 'react-native';
+import { Button, Badge } from 'native-base';
 
+const btnStyle = {
+  width: '100%',
+  height: 24,
+  paddingLeft: 5,
+};
 
 export default class Todo extends React.PureComponent {
   render() {
     const { todo, nextTodo } = this.props;
     return(
-      <View>
-        <Text>
-          {todo.title}
-        </Text>
+      <View style={styles.containerStyle}>
+        <Text style={{ paddingTop: 2, paddingLeft: 5, marginBottom: 5 }}>{todo.title}</Text>
         <View>
           {
-            todo.status !== 'incomplete' && <Previous />
+            todo.status !== 'incomplete'
+            &&
+            <Previous
+              nextTodo={nextTodo}
+              id={todo.todoId}
+            />
           }
           {
             todo.status !== 'complete'
@@ -33,13 +42,16 @@ export default class Todo extends React.PureComponent {
   }
 }
 
-function Previous() {
+function Previous({ id, nextTodo }) {
   return (
-    <TouchableHighlight style={styles.previous}>
+    <Button
+      style={styles.previous}
+      onPress={() => nextTodo(id, 1)}
+    >
       <Text>
         Previous
       </Text>
-    </TouchableHighlight>
+    </Button>
   );
 }
 
@@ -53,22 +65,31 @@ function Next({ todo, nextTodo }) {
   } else {
     text = 'N/A';
   }
-  return ( 
-    <TouchableHighlight 
+  return (
+    <Button
       style={styles.next}
       onPress={() => nextTodo(todo.todoId)}
     >
       <Text>
         {text}
       </Text>
-    </TouchableHighlight>
+    </Button>
   );
 }
+
 const styles = StyleSheet.create({
+  containerStyle: {
+    backgroundColor: 'lightblue',
+    borderWidth: 2,
+    borderColor: 'orange',
+    borderRadius: 8,
+  },
   previous: {
-    backgroundColor: 'yellow',
+    ...btnStyle,
+    ...{ backgroundColor: 'yellow'},
   },
   next: {
-    backgroundColor: 'green',
+    ...btnStyle,
+    ...{ backgroundColor: 'green' },
   },
 });
